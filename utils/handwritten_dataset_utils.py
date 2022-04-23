@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tqdm 
 
-from Initial_and_Transition_matrix_generator import alphabet_to_index, index_to_alphabet
+from utils.Initial_and_Transition_matrix_generator import alphabet_to_index, index_to_alphabet
 
 word_list = ["learning", "in", "robotics", "school", "of", "engineering", "and", "applied", "science", "university", "pennsylvania"]
 
