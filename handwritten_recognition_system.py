@@ -1,10 +1,13 @@
 import numpy as np
 from algs.viterbi import Viterbi
+from algs.smooth import Smooth
 class Handwrittten_recognition_system():
     def __init__(self, transitions_path, init_distribution_path, alg="viterbi"):
 
         if alg == "viterbi":
             self.predictor = Viterbi()
+        elif alg == "smooth":
+            self.predictor = Smooth()
     
         self.load_transitions(transitions_path)
         self.load_init_distribution(init_distribution_path)
