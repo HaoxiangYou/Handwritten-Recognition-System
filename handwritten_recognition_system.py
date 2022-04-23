@@ -1,6 +1,7 @@
 import numpy as np
 from algs.viterbi import Viterbi
 from algs.smooth import Smooth
+from algs.bayes_filter import BayesFilter
 class Handwrittten_recognition_system():
     def __init__(self, transitions_path, init_distribution_path, alg="viterbi"):
 
@@ -8,7 +9,9 @@ class Handwrittten_recognition_system():
             self.predictor = Viterbi()
         elif alg == "smooth":
             self.predictor = Smooth()
-    
+        elif alg == "bayes_filter":
+            self.predictor = BayesFilter()
+
         self.load_transitions(transitions_path)
         self.load_init_distribution(init_distribution_path)
 
