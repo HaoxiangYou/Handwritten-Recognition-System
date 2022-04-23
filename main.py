@@ -27,8 +27,7 @@ def main():
         handwritten_recogonition_predictor.load_image(images[i,:])
         predict_states = handwritten_recogonition_predictor.make_prediction()
         predict_letters = [index_to_alphabet[x] for x in predict_states]
-        predict_vocabulary = str(predict_letters)
-
+        predict_vocabulary =  "".join(predict_letters)
         view_word(images[i,:], predict_vocabulary, pause_time = 0.1)
 
 if __name__ == "__main__":
