@@ -9,12 +9,15 @@ from utils.Initial_and_Transition_matrix_generator import alphabet_to_index, ind
 
 word_list = ["learning", "in", "robotics", "school", "of", "engineering", "and", "applied", "science", "university", "pennsylvania"]
 
-def view_alphabet(flatten_img, prediction):
+def view_alphabet(flatten_img, prediction, pause_time = None):
     plt.imshow(flatten_img.reshape(28,28), cmap="gray")
     plt.title(prediction)
-    plt.show()
+    if pause_time:
+        plt.pause(pause_time)
+    else:
+        plt.show()
 
-def view_word(flatten_word, prediction):
+def view_word(flatten_word, prediction, pause_time = None):
     word = flatten_word.reshape(-1,28,28)
     img = np.zeros((28, 28*word.shape[0]))
     for i in range(word.shape[0]):
@@ -22,7 +25,10 @@ def view_word(flatten_word, prediction):
 
     plt.imshow(img, cmap="gray")
     plt.title(prediction)
-    plt.show()
+    if pause_time:
+        plt.pause(0.1)
+    else:
+        plt.show()
 
 def view_word_dataset(dataset_path):
     dataset = np.load(dataset_path)
