@@ -2,6 +2,7 @@ import numpy as np
 from algs.viterbi import Viterbi
 from algs.smooth import Smooth
 from algs.bayes_filter import BayesFilter
+from algs.max_likelihood import MaxLikelihood
 class Handwrittten_recognition_system():
     def __init__(self, transitions_path, init_distribution_path, alg="viterbi"):
 
@@ -11,6 +12,10 @@ class Handwrittten_recognition_system():
             self.predictor = Smooth()
         elif alg == "bayes_filter":
             self.predictor = BayesFilter()
+        elif alg == "max_likelihood":
+            self.predictor = MaxLikelihood()
+        else:
+            raise ValueError("Invalid prediction algorithm")
 
         self.load_transitions(transitions_path)
         self.load_init_distribution(init_distribution_path)
