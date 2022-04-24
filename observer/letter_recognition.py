@@ -143,4 +143,4 @@ def main(retrain=False):
 
 
 if __name__ == "__main__":
-    main(retrain=False)
+    main(retrain=True)
