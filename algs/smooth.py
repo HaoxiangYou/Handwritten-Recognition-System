@@ -19,7 +19,7 @@ class Smooth(HMM):
         beta[-1,:] = np.ones_like(beta[-1,:])
 
         for i in range(self.num_states-2, -1, -1):
-            beta[i,:] = (self.transition[i] * self.likelihood[i+1,:]).T @ beta[i+1,:]
+            beta[i,:] = (beta[i+1,:] * self.likelihood[i+1,:]) @ self.transition[i].T
 
         return beta
 
