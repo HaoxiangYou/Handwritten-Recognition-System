@@ -31,7 +31,7 @@ def view_word(flatten_word, prediction, pause_time = None):
         plt.show()
 
 def view_word_dataset(dataset_path):
-    dataset = np.load(dataset_path)
+    dataset = np.load(dataset_path, allow_pickle=True)
     for i in tqdm.tqdm(range(dataset.shape[0])):
         word = dataset[i,:].reshape(-1, 28, 28)
         img = np.zeros((28, 28*word.shape[0]))
@@ -43,7 +43,7 @@ def view_word_dataset(dataset_path):
         plt.pause(0.1)
 
 def view_alphabet_dataset(dataset_path):
-    dataset = np.load(dataset_path)
+    dataset = np.load(dataset_path, allow_pickle=True)
     for i in tqdm.tqdm(range(dataset.shape[0])):
         img = dataset[i,1:]
         plt.imshow(img.reshape(28,28), cmap="gray")
@@ -65,12 +65,13 @@ def get_sub_dataset(dir, dataset_num=260000):
 
     np.save(output_path, partial_data)
 
+
 def split_dataset(dir, train_ratio=0.6, cv_ratio = 0.2, test_ratio = 0.2):
     
     # Loading whole dataset
     path = os.path.join(dir, "A_Z Handwritten Data small portion.npy")
 
-    dataset = np.load(path)
+    dataset = np.load(path, allow_pickle=True)
 
     # Split the dataset
     np.random.seed(0)
@@ -118,9 +119,9 @@ def split_dataset(dir, train_ratio=0.6, cv_ratio = 0.2, test_ratio = 0.2):
         test_dataset_certain_letter_path = os.path.join(test_directory, "{}.npy".format(index_to_alphabet[i]))
         np.save(test_dataset_certain_letter_path, test_dataset[test_dataset_certain_letter_index])
 
+
 def generate_words_dataset(dir, dataset_number=100):
     test_dataset_dir_for_single_letter = os.path.join(dir, "test_dataset")
-
 
     if not os.path.exists(os.path.join(dir, "words")):
         os.mkdir(os.path.join(dir, "words"))
@@ -135,11 +136,11 @@ def generate_words_dataset(dir, dataset_number=100):
         for i in range(num_letter):
             letter = word[i]
             alphabet_dataset_path = os.path.join(os.path.join(dir, "test_dataset"), "{}.npy".format(letter))
-            alphabet_dataset = np.load(alphabet_dataset_path)
+            alphabet_dataset = np.load(alphabet_dataset_path, allow_pickle=True)
             np.random.shuffle(alphabet_dataset)
             data[:,i*28*28: (i+1)*28*28] = alphabet_dataset[:dataset_number,1:]
 
-        output_path = os.path.join(os.path.join(dir, "words"), "{}.npy".format(word))    
+        output_path = os.path.join(os.path.join(dir, "words"), "{}.npy".format(word))
         np.save(output_path, data)
 
 def main():
@@ -159,6 +160,7 @@ def main():
     generate_words_dataset(dir)
 
     view_word_dataset(os.path.join(dir, "words/learning.npy"))
+
 
 if __name__ == "__main__":
     main()
