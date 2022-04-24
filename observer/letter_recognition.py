@@ -4,6 +4,7 @@ import os
 import numpy as np
 import torch.nn as nn
 import matplotlib.pyplot as plt
+from utils.Initial_and_Transition_matrix_generator import alphabet_to_index, index_to_alphabet
 
 
 class CNN(nn.Module):
@@ -111,16 +112,26 @@ def eval(model: CNN, valid_data, dir):
     return acc
 
 
+def cal_likelihood(prediction):
+    likelihood = np.zeros(26)
+    n = prediction.shape[0]
+    for i in range(n):
+        likelihood[prediction[i]] += 1
+    return likelihood / n
+
 def main(retrain=False):
     parser = argparse.ArgumentParser()
     parser.add_argument('--dir', type=str,
                         default='../dataset/handwritten_alphabets/')
     parser.add_argument('--dir_obs', type=str,
                         default='../trained_model/observer/')
+    parser.add_argument('--mode', type=str,
+                        default='get_likelihood')
     args = parser.parse_args()
 
     dir = args.dir
     dir_obs = args.dir_obs
+    mode = args.mode
 
     train_path = os.path.join(dir, "train_dataset/all.npy")
     valid_path = os.path.join(dir, "cross_validation_dataset/all.npy")
@@ -130,17 +141,35 @@ def main(retrain=False):
     valid_data = torch.from_numpy(np.load(valid_path))
     test_data = torch.from_numpy(np.load(test_path))
 
-    if retrain:
+    if mode == "train":
         model = train(train_data, valid_data, dir=dir_obs)
-    else:
+    elif mode == "eval":
         # load current model to test
         # model_path = "../trained_model/observer/model_cnn.pt"
         model_path = os.path.join(dir_obs, "model_cnn.pt")
         model = CNN()
         model.load_state_dict(torch.load(model_path))
 
-    eval(model, valid_data, dir=dir_obs)
+        eval(model, valid_data, dir=dir_obs)
+    elif mode == "get_likelihood":
+        
+        model_path = os.path.join(dir_obs, "model_cnn.pt")
+        model = CNN()
+        model.load_state_dict(torch.load(model_path))
+        model.eval()
 
+        test_dir = os.path.join(dir, "cross_validation_dataset")
+        likelihood = np.zeros((26,26))
+
+        for i in range(26):
+            path = os.path.join(test_dir,index_to_alphabet[i]+".npy")
+            data = torch.from_numpy(np.load(path))[:,1:].reshape(-1,1,28,28).float()
+            prediction = np.argmax(model(data).detach().numpy(),axis=1)
+            likelihood[i,:] = cal_likelihood(prediction)
+        
+        output_path = os.path.join(dir_obs, "likelihood.npy")
+            
+        np.save(output_path ,likelihood)
 
 if __name__ == "__main__":
-    main(retrain=True)
+    main()
