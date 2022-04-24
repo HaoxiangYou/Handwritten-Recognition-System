@@ -1,10 +1,12 @@
 import numpy as np
+import torch
 from algs.viterbi import Viterbi
 from algs.smooth import Smooth
 from algs.bayes_filter import BayesFilter
 from algs.max_likelihood import MaxLikelihood
+from observer.letter_recognition import CNN
 class Handwrittten_recognition_system():
-    def __init__(self, transitions_path, init_distribution_path, alg="viterbi"):
+    def __init__(self, transitions_path, init_distribution_path, observer_path, alg="smooth"):
 
         if alg == "viterbi":
             self.predictor = Viterbi()
@@ -19,6 +21,10 @@ class Handwrittten_recognition_system():
 
         self.load_transitions(transitions_path)
         self.load_init_distribution(init_distribution_path)
+
+        self.observer = CNN()
+        self.observer.load_state_dict(torch.load(observer_path))
+        self.observer.eval()
 
     def load_image(self, image):
         """
@@ -35,8 +41,8 @@ class Handwrittten_recognition_system():
         self.init_distribution = np.load(path)
 
     def get_likelihood(self):
-        # TODO get the likelihood
         self.likelihood = np.ones((self.num_states,26)) / 26
+        self.likelihood = np.exp(self.observer(torch.from_numpy(self.image).reshape(self.num_states, 1, 28, 28).float()).detach().numpy())
 
     def make_prediction(self):
         
