@@ -1,3 +1,4 @@
+from mimetypes import init
 import numpy as np
 import torch
 from algs.viterbi import Viterbi
@@ -6,7 +7,7 @@ from algs.bayes_filter import BayesFilter
 from algs.max_likelihood import MaxLikelihood
 from observer.letter_recognition import CNN
 class Handwrittten_recognition_system():
-    def __init__(self, transitions_path, init_distribution_path, observer_path, alg="smooth"):
+    def __init__(self, path, alg="viterbi"):
 
         if alg == "viterbi":
             self.predictor = Viterbi()
@@ -18,6 +19,10 @@ class Handwrittten_recognition_system():
             self.predictor = MaxLikelihood()
         else:
             raise ValueError("Invalid prediction algorithm")
+
+        transitions_path = path["transition"]
+        init_distribution_path = path["initial_distribution"]
+        observer_path = path["observer"]
 
         self.load_transitions(transitions_path)
         self.load_init_distribution(init_distribution_path)

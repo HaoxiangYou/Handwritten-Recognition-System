@@ -5,6 +5,16 @@ from handwritten_recognition_system import Handwrittten_recognition_system
 from utils.handwritten_dataset_utils import view_word
 from utils.Initial_and_Transition_matrix_generator import index_to_alphabet
 
+def eval(images, path, alg="viterbi"):
+    handwritten_recogonition_predictor = Handwrittten_recognition_system(path, alg)
+
+    for i in range(images.shape[0]):
+        handwritten_recogonition_predictor.load_image(images[i,:])
+        predict_states = handwritten_recogonition_predictor.make_prediction()
+        predict_letters = [index_to_alphabet[x] for x in predict_states]
+        predict_vocabulary =  "".join(predict_letters)
+        view_word(images[i,:], predict_vocabulary, pause_time = 0.1)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--images_path',type=str, 
@@ -24,14 +34,12 @@ def main():
 
     images = np.load(images_path)
 
-    handwritten_recogonition_predictor = Handwrittten_recognition_system(transition_matrices_path, init_distribution_path, observer_path)
+    path = {"initial_distribution":init_distribution_path,
+            "transition": transition_matrices_path,
+            "observer":observer_path}
 
-    for i in range(images.shape[0]):
-        handwritten_recogonition_predictor.load_image(images[i,:])
-        predict_states = handwritten_recogonition_predictor.make_prediction()
-        predict_letters = [index_to_alphabet[x] for x in predict_states]
-        predict_vocabulary =  "".join(predict_letters)
-        view_word(images[i,:], predict_vocabulary, pause_time = 0.1)
+    eval(images, path)
+
 
 if __name__ == "__main__":
     main()
