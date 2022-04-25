@@ -132,3 +132,5 @@ dmypy.json
 trained_model/
 # Dataset 
 dataset/
+# Results
+logs/
