@@ -7,7 +7,17 @@ from algs.bayes_filter import BayesFilter
 from algs.max_likelihood import MaxLikelihood
 from observer.letter_recognition import CNN
 class Handwrittten_recognition_system():
-    def __init__(self, path, alg="viterbi"):
+    def __init__(self, path, alg="viterbi", likelihood_choice="argmax"):
+
+        """
+        Paras:
+            path: a dictionary contains all the relevant path
+            alg: a string from ["viterbi", "smooth", "bayes_filter", "max_likelihood"] to select algorithm for making prediction
+            likelihood: a string from ["obs", "argmax"] to select how to calculate likelihood,
+                        "obs": directly use the CNN output probability as likelihood
+                        "argmax": predict what is the letter, and use the prediction to find what's the likelihood for get this prediction.
+                                The pre-determined likelihood matrix is 26 X 26 matrix where each row i indicate the P(Y|X_i). 
+        """
 
         if alg == "viterbi":
             self.predictor = Viterbi()
@@ -31,6 +41,15 @@ class Handwrittten_recognition_system():
         self.observer.load_state_dict(torch.load(observer_path))
         self.observer.eval()
 
+        if likelihood_choice not in ["obs", "argmax"]:
+            raise ValueError("Invalid likelihood obtained choice")
+
+        self.likelihood_choice = likelihood_choice
+
+        if likelihood_choice == "argmax":
+            emission_path = path["emission"]
+            self.emission = np.load(emission_path)
+
     def load_image(self, image):
         """
         para:
@@ -47,7 +66,14 @@ class Handwrittten_recognition_system():
 
     def get_likelihood(self):
         self.likelihood = np.ones((self.num_states,26)) / 26
-        self.likelihood = np.exp(self.observer(torch.from_numpy(self.image).reshape(self.num_states, 1, 28, 28).float()).detach().numpy())
+
+        self.observation = np.exp(self.observer(torch.from_numpy(self.image).reshape(self.num_states, 1, 28, 28).float()).detach().numpy())
+        if self.likelihood_choice == "obs":
+            self.likelihood = self.observation
+        elif self.likelihood_choice == "argmax":
+            for i in range(self.num_states):
+                predict_letter = np.argmax(self.observation[i])
+                self.likelihood[i, :] = self.emission[:, predict_letter]
 
     def make_prediction(self):
         
