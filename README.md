@@ -18,3 +18,14 @@ Jia Shen:
 
 # Demo
 ![til](demo.gif)
+
+### Prediction results of different algorithm
+
+|Max likelihood | Bayes Filter  | Smooth | Viterbi |
+|---|---|---|---|
+![](baseline_prediction_direct_likelihood.png)  | ![](bayes_prediction_direct_likelihood.png) |![](smooth_prediction_direct_likelihood.png) |![](viterbi_prediction_direct_likelihood.png)
+
+
+# Report:
+
+Available [Here](ESE650_Project_Report.pdf)
